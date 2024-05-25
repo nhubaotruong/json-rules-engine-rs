@@ -2,7 +2,6 @@ use crate::{event::EventTrait, Error};
 
 use async_trait::async_trait;
 use erased_serde::Serialize;
-use futures_util::TryFutureExt;
 use sendgrid::v3::{
     Content, Email as SendGridEmail, Message, Personalization, Sender,
 };

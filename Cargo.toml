@@ -41,7 +41,7 @@ tokio = { version = "1", features = ["full"] }
 
 [features]
 default = []
-async = ["async-trait", "futures-util"]
+async = ["futures-util"]
 
 callback = ["reqwest", "async"]
 email    = ["sendgrid", "async"]
