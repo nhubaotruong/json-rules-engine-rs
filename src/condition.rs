@@ -2,6 +2,7 @@ use crate::{status::Status, Constraint};
 #[cfg(feature = "eval")]
 use rhai::{serde::to_dynamic, Engine, Scope};
 use serde::{Deserialize, Serialize};
+use serde_json::Number;
 use serde_json::Value;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -541,6 +542,36 @@ pub fn bool_equals(field: &str, val: bool) -> Condition {
     Condition::Condition {
         field: field.into(),
         constraint: Constraint::BoolEquals(val),
+        path: None,
+    }
+}
+
+/// Create a rule for generic number comparison
+pub fn number_greater_than(field: &str, val: Number) -> Condition {
+    Condition::Condition {
+        field: field.into(),
+        constraint: Constraint::NumberGreaterThan(val),
+        path: None,
+    }
+}
+pub fn number_greater_than_inclusive(field: &str, val: Number) -> Condition {
+    Condition::Condition {
+        field: field.into(),
+        constraint: Constraint::NumberGreaterThanInclusive(val),
+        path: None,
+    }
+}
+pub fn number_less_than(field: &str, val: Number) -> Condition {
+    Condition::Condition {
+        field: field.into(),
+        constraint: Constraint::NumberLessThan(val),
+        path: None,
+    }
+}
+pub fn number_less_than_inclusive(field: &str, val: Number) -> Condition {
+    Condition::Condition {
+        field: field.into(),
+        constraint: Constraint::NumberLessThanInclusive(val),
         path: None,
     }
 }

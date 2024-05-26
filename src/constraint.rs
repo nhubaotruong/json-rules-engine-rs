@@ -1,5 +1,6 @@
 use crate::status::Status;
 use serde::{Deserialize, Serialize};
+use serde_json::Number;
 use serde_json::Value;
 use strum::VariantNames;
 use strum_macros::EnumVariantNames;
@@ -46,6 +47,10 @@ pub enum Constraint {
     FloatGreaterThan(f64),
     FloatGreaterThanInclusive(f64),
     BoolEquals(bool),
+    NumberGreaterThan(Number),
+    NumberGreaterThanInclusive(Number),
+    NumberLessThan(Number),
+    NumberLessThanInclusive(Number),
 }
 
 impl Constraint {
@@ -65,7 +70,7 @@ impl Constraint {
     }
 
     pub fn check_value(&self, v: &Value) -> Status {
-        match *self {
+        match self {
             Constraint::StringEquals(ref s) => match v.as_str() {
                 None => Status::NotMet,
                 Some(v) => {
@@ -169,7 +174,7 @@ impl Constraint {
             Constraint::IntEquals(num) => match v.as_i64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if v == num {
+                    if v == *num {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -179,7 +184,7 @@ impl Constraint {
             Constraint::IntNotEquals(num) => match v.as_i64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if v != num {
+                    if v != *num {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -267,7 +272,7 @@ impl Constraint {
             Constraint::IntInRange(start, end) => match v.as_i64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if start <= v && v <= end {
+                    if start <= &v && v <= *end {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -277,7 +282,7 @@ impl Constraint {
             Constraint::IntNotInRange(start, end) => match v.as_i64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if start <= v && v <= end {
+                    if start <= &v && v <= *end {
                         Status::NotMet
                     } else {
                         Status::Met
@@ -287,7 +292,7 @@ impl Constraint {
             Constraint::IntLessThan(num) => match v.as_i64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if v < num {
+                    if v < *num {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -297,7 +302,7 @@ impl Constraint {
             Constraint::IntLessThanInclusive(num) => match v.as_i64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if v <= num {
+                    if v <= *num {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -307,7 +312,7 @@ impl Constraint {
             Constraint::IntGreaterThan(num) => match v.as_i64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if v > num {
+                    if v > *num {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -317,7 +322,7 @@ impl Constraint {
             Constraint::IntGreaterThanInclusive(num) => match v.as_i64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if v >= num {
+                    if v >= *num {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -391,7 +396,7 @@ impl Constraint {
             Constraint::FloatInRange(start, end) => match v.as_f64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if start <= v && v <= end {
+                    if start <= &v && v <= *end {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -401,7 +406,7 @@ impl Constraint {
             Constraint::FloatNotInRange(start, end) => match v.as_f64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if start <= v && v <= end {
+                    if start <= &v && v <= *end {
                         Status::NotMet
                     } else {
                         Status::Met
@@ -411,7 +416,7 @@ impl Constraint {
             Constraint::FloatLessThan(num) => match v.as_f64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if v < num {
+                    if v < *num {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -421,7 +426,7 @@ impl Constraint {
             Constraint::FloatLessThanInclusive(num) => match v.as_f64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if v <= num {
+                    if v <= *num {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -431,7 +436,7 @@ impl Constraint {
             Constraint::FloatGreaterThan(num) => match v.as_f64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if v > num {
+                    if v > *num {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -441,7 +446,7 @@ impl Constraint {
             Constraint::FloatGreaterThanInclusive(num) => match v.as_f64() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if v >= num {
+                    if v >= *num {
                         Status::Met
                     } else {
                         Status::NotMet
@@ -451,12 +456,128 @@ impl Constraint {
             Constraint::BoolEquals(b) => match v.as_bool() {
                 None => Status::NotMet,
                 Some(v) => {
-                    if v == b {
+                    if v == *b {
                         Status::Met
                     } else {
                         Status::NotMet
                     }
                 }
+            },
+            Constraint::NumberGreaterThan(value) => match v {
+                Value::Number(num) => match num.as_f64() {
+                    None => Status::NotMet,
+                    Some(num) => match value.as_f64() {
+                        None => Status::NotMet,
+                        Some(value) => {
+                            if num > value {
+                                Status::Met
+                            } else {
+                                Status::NotMet
+                            }
+                        }
+                    },
+                },
+                Value::String(s) => match s.parse::<f64>() {
+                    Err(_) => Status::NotMet,
+                    Ok(num) => match value.as_f64() {
+                        None => Status::NotMet,
+                        Some(value) => {
+                            if num > value {
+                                Status::Met
+                            } else {
+                                Status::NotMet
+                            }
+                        }
+                    },
+                },
+                _ => Status::NotMet,
+            },
+            Constraint::NumberGreaterThanInclusive(value) => match v {
+                Value::Number(num) => match num.as_f64() {
+                    None => Status::NotMet,
+                    Some(num) => match value.as_f64() {
+                        None => Status::NotMet,
+                        Some(value) => {
+                            if num >= value {
+                                Status::Met
+                            } else {
+                                Status::NotMet
+                            }
+                        }
+                    },
+                },
+                Value::String(s) => match s.parse::<f64>() {
+                    Err(_) => Status::NotMet,
+                    Ok(num) => match value.as_f64() {
+                        None => Status::NotMet,
+                        Some(value) => {
+                            if num >= value {
+                                Status::Met
+                            } else {
+                                Status::NotMet
+                            }
+                        }
+                    },
+                },
+                _ => Status::NotMet,
+            },
+            Constraint::NumberLessThan(value) => match v {
+                Value::Number(num) => match num.as_f64() {
+                    None => Status::NotMet,
+                    Some(num) => match value.as_f64() {
+                        None => Status::NotMet,
+                        Some(value) => {
+                            if num < value {
+                                Status::Met
+                            } else {
+                                Status::NotMet
+                            }
+                        }
+                    },
+                },
+                Value::String(s) => match s.parse::<f64>() {
+                    Err(_) => Status::NotMet,
+                    Ok(num) => match value.as_f64() {
+                        None => Status::NotMet,
+                        Some(value) => {
+                            if num < value {
+                                Status::Met
+                            } else {
+                                Status::NotMet
+                            }
+                        }
+                    },
+                },
+                _ => Status::NotMet,
+            },
+            Constraint::NumberLessThanInclusive(value) => match v {
+                Value::Number(num) => match num.as_f64() {
+                    None => Status::NotMet,
+                    Some(num) => match value.as_f64() {
+                        None => Status::NotMet,
+                        Some(value) => {
+                            if num <= value {
+                                Status::Met
+                            } else {
+                                Status::NotMet
+                            }
+                        }
+                    },
+                },
+                Value::String(s) => match s.parse::<f64>() {
+                    Err(_) => Status::NotMet,
+                    Ok(num) => match value.as_f64() {
+                        None => Status::NotMet,
+                        Some(value) => {
+                            if num <= value {
+                                Status::Met
+                            } else {
+                                Status::NotMet
+                            }
+                        }
+                    },
+                },
+                _ => Status::NotMet,
             },
         }
     }
