@@ -153,9 +153,8 @@ impl Condition {
                         if let Some(p) = path {
                             let x = jsonpath_lib::select(&node, p)
                                 .unwrap()
-                                .into_iter()
-                                .cloned()
-                                .collect();
+                                .get(0)
+                                .unwrap();
                             node = Value::Array(x);
                         }
                     }
