@@ -547,28 +547,28 @@ pub fn bool_equals(field: &str, val: bool) -> Condition {
 }
 
 /// Create a rule for generic number comparison
-pub fn number_greater_than(field: &str, val: Number) -> Condition {
+pub fn number_greater_than(field: &str, val: f64) -> Condition {
     Condition::Condition {
         field: field.into(),
         constraint: Constraint::NumberGreaterThan(val),
         path: None,
     }
 }
-pub fn number_greater_than_inclusive(field: &str, val: Number) -> Condition {
+pub fn number_greater_than_inclusive(field: &str, val: f64) -> Condition {
     Condition::Condition {
         field: field.into(),
         constraint: Constraint::NumberGreaterThanInclusive(val),
         path: None,
     }
 }
-pub fn number_less_than(field: &str, val: Number) -> Condition {
+pub fn number_less_than(field: &str, val: f64) -> Condition {
     Condition::Condition {
         field: field.into(),
         constraint: Constraint::NumberLessThan(val),
         path: None,
     }
 }
-pub fn number_less_than_inclusive(field: &str, val: Number) -> Condition {
+pub fn number_less_than_inclusive(field: &str, val: f64) -> Condition {
     Condition::Condition {
         field: field.into(),
         constraint: Constraint::NumberLessThanInclusive(val),
