@@ -70,6 +70,7 @@ impl Constraint {
     }
 
     pub fn check_value(&self, v: &Value) -> Status {
+        println!("Checking value: {:?}", v);
         match self {
             Constraint::StringEquals(ref s) => match v.as_str() {
                 None => Status::NotMet,
