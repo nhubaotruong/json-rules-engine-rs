@@ -155,7 +155,7 @@ impl Condition {
                                 .unwrap()
                                 .get(0)
                                 .unwrap();
-                            node = Value::Array(x);
+                            node = (*x).clone();
                         }
                     }
 
