@@ -153,7 +153,7 @@ impl Condition {
                         if let Some(p) = path {
                             let selected_nodes =
                                 jsonpath_lib::select(&node, p).unwrap();
-                            let x = selected_nodes.get(0).unwrap();
+                            let x = selected_nodes.get(0).unwrap_or(serde_json::Value::Null);
                             node = (*x).clone();
                         }
                     }
