@@ -94,7 +94,7 @@ use serde::Serialize;
 
 #[cfg(feature = "async")]
 type EventType =
-    std::sync::Arc<futures_util::lock::Mutex<dyn EventTrait + Send + Sync>>;
+std::sync::Arc<futures_util::lock::Mutex<dyn EventTrait + Send + Sync>>;
 #[cfg(not(feature = "async"))]
 type EventType = std::rc::Rc<std::sync::Mutex<dyn EventTrait>>;
 
@@ -107,18 +107,18 @@ def_package!(
 
 #[derive(Default)]
 pub struct Engine {
-    rules: Vec<Rule>,
-    events: HashMap<String, EventType>,
+    pub rules: Vec<Rule>,
+    pub events: HashMap<String, EventType>,
     #[cfg(feature = "eval")]
-    rhai_engine: RhaiEngine,
-    coalescences: HashMap<String, (Instant, u64)>,
+    pub rhai_engine: RhaiEngine,
+    pub coalescences: HashMap<String, (Instant, u64)>,
 }
 
 impl Engine {
     #[cfg(feature = "async")]
     pub async fn new() -> Self {
         #[allow(unused_mut)]
-        let mut events: HashMap<_, EventType> = HashMap::new();
+            let mut events: HashMap<_, EventType> = HashMap::new();
 
         #[cfg(feature = "callback")]
         {
@@ -156,7 +156,7 @@ impl Engine {
     #[cfg(not(feature = "async"))]
     pub fn new() -> Self {
         #[allow(unused_mut)]
-        let mut events: HashMap<_, EventType> = HashMap::new();
+            let mut events: HashMap<_, EventType> = HashMap::new();
 
         Self {
             rules: Vec::new(),
@@ -220,7 +220,7 @@ impl Engine {
                 rule.check_value(
                     &facts,
                     #[cfg(feature = "eval")]
-                    &self.rhai_engine,
+                        &self.rhai_engine,
                 )
             })
             .filter(|rule_result| {
@@ -288,7 +288,7 @@ impl Engine {
                 rule.check_value(
                     &facts,
                     #[cfg(feature = "eval")]
-                    &self.rhai_engine,
+                        &self.rhai_engine,
                 )
             })
             .filter(|rule_result| {
