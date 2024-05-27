@@ -1,3 +1,4 @@
+use std::ops::Deref;
 use crate::{status::Status, Constraint};
 #[cfg(feature = "eval")]
 use rhai::{serde::to_dynamic, Engine, Scope};
@@ -154,8 +155,8 @@ impl Condition {
                                 jsonpath_lib::select(&node, p).unwrap();
                             let x = selected_nodes.get(0).unwrap_or_else(|| {
                                 &Value::Null
-                            });
-                            node = (*x).clone();
+                            }).deref();
+                            node = x.clone();
                         }
                     }
 
