@@ -154,7 +154,7 @@ impl Condition {
                             let selected_nodes =
                                 jsonpath_lib::select(&node, p).unwrap();
                             let x = selected_nodes.get(0).unwrap_or_else(|| {
-                                &Value::Null
+                                &&Value::Null
                             }).deref();
                             node = x.clone();
                         }
