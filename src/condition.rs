@@ -2,7 +2,6 @@ use crate::{status::Status, Constraint};
 #[cfg(feature = "eval")]
 use rhai::{serde::to_dynamic, Engine, Scope};
 use serde::{Deserialize, Serialize};
-use serde_json::Number;
 use serde_json::Value;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -50,7 +49,7 @@ impl Condition {
                         c.check_value(
                             info,
                             #[cfg(feature = "eval")]
-                            rhai_engine,
+                                rhai_engine,
                         )
                     })
                     .inspect(|r| status = status & r.status)
@@ -66,7 +65,7 @@ impl Condition {
                 let res = c.check_value(
                     info,
                     #[cfg(feature = "eval")]
-                    rhai_engine,
+                        rhai_engine,
                 );
 
                 ConditionResult {
@@ -83,7 +82,7 @@ impl Condition {
                         c.check_value(
                             info,
                             #[cfg(feature = "eval")]
-                            rhai_engine,
+                                rhai_engine,
                         )
                     })
                     .inspect(|r| status = status | r.status)
@@ -106,7 +105,7 @@ impl Condition {
                         c.check_value(
                             info,
                             #[cfg(feature = "eval")]
-                            rhai_engine,
+                                rhai_engine,
                         )
                     })
                     .inspect(|r| {
@@ -153,7 +152,9 @@ impl Condition {
                         if let Some(p) = path {
                             let selected_nodes =
                                 jsonpath_lib::select(&node, p).unwrap();
-                            let x = selected_nodes.get(0).unwrap_or(serde_json::Value::Null);
+                            let x = selected_nodes.get(0).unwrap_or_else(|| {
+                                &Value::Null
+                            });
                             node = (*x).clone();
                         }
                     }
@@ -552,6 +553,7 @@ pub fn number_greater_than(field: &str, val: f64) -> Condition {
         path: None,
     }
 }
+
 pub fn number_greater_than_inclusive(field: &str, val: f64) -> Condition {
     Condition::Condition {
         field: field.into(),
@@ -559,6 +561,7 @@ pub fn number_greater_than_inclusive(field: &str, val: f64) -> Condition {
         path: None,
     }
 }
+
 pub fn number_less_than(field: &str, val: f64) -> Condition {
     Condition::Condition {
         field: field.into(),
@@ -566,6 +569,7 @@ pub fn number_less_than(field: &str, val: f64) -> Condition {
         path: None,
     }
 }
+
 pub fn number_less_than_inclusive(field: &str, val: f64) -> Condition {
     Condition::Condition {
         field: field.into(),
