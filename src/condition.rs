@@ -1,9 +1,9 @@
-use std::ops::Deref;
 use crate::{status::Status, Constraint};
 #[cfg(feature = "eval")]
 use rhai::{serde::to_dynamic, Engine, Scope};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::ops::Deref;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -50,7 +50,7 @@ impl Condition {
                         c.check_value(
                             info,
                             #[cfg(feature = "eval")]
-                                rhai_engine,
+                            rhai_engine,
                         )
                     })
                     .inspect(|r| status = status & r.status)
@@ -66,7 +66,7 @@ impl Condition {
                 let res = c.check_value(
                     info,
                     #[cfg(feature = "eval")]
-                        rhai_engine,
+                    rhai_engine,
                 );
 
                 ConditionResult {
@@ -83,7 +83,7 @@ impl Condition {
                         c.check_value(
                             info,
                             #[cfg(feature = "eval")]
-                                rhai_engine,
+                            rhai_engine,
                         )
                     })
                     .inspect(|r| status = status | r.status)
@@ -106,7 +106,7 @@ impl Condition {
                         c.check_value(
                             info,
                             #[cfg(feature = "eval")]
-                                rhai_engine,
+                            rhai_engine,
                         )
                     })
                     .inspect(|r| {
@@ -153,9 +153,10 @@ impl Condition {
                         if let Some(p) = path {
                             let selected_nodes =
                                 jsonpath_lib::select(&node, p).unwrap();
-                            let x = selected_nodes.get(0).unwrap_or_else(|| {
-                                &&Value::Null
-                            }).deref();
+                            let x = selected_nodes
+                                .get(0)
+                                .unwrap_or_else(|| &&Value::Null)
+                                .deref();
                             node = x.clone();
                         }
                     }
@@ -173,6 +174,7 @@ impl Condition {
             Condition::Eval { ref expr } => {
                 let mut scope = Scope::new();
                 if let Ok(val) = to_dynamic(info) {
+                    println!("{:?}", val);
                     scope.push_dynamic("facts", val);
                 }
                 let status = if rhai_engine
